@@ -1,0 +1,47 @@
+name: Publish package
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-${{ github.event.release.tag_name || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          registry-url: https://npm.pkg.github.com
+          scope: '@avenuemonten'
+          package-manager-cache: false
+      - name: Check extension and release version
+        run: npm run check
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+      - name: Build Chrome ZIP
+        run: npm run package:chrome
+      - name: Publish to GitHub Packages
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          package_version=$(node -p 'require("./package.json").version')
+          if npm view "@avenuemonten/chatgpt-bulker@$package_version" version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "Version $package_version is already published."
+          else
+            npm publish --access public --registry=https://npm.pkg.github.com
+          fi
+          npm view "@avenuemonten/chatgpt-bulker@$package_version" version --registry=https://npm.pkg.github.com

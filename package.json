@@ -1,0 +1,23 @@
+{
+  "name": "@avenuemonten/chatgpt-bulker",
+  "version": "1.0.0",
+  "description": "Chrome extension to select and bulk delete or archive ChatGPT conversations.",
+  "author": "avenue",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avenuemonten/chatgpt-bulker.git"
+  },
+  "homepage": "https://github.com/avenuemonten/chatgpt-bulker#readme",
+  "bugs": "https://github.com/avenuemonten/chatgpt-bulker/issues",
+  "keywords": ["chrome-extension", "chatgpt", "bulk-delete", "archive", "chat-management"],
+  "files": ["manifest.json", "styles/", "README.txt", "LICENSE", "NOTICE", "_locales/", "icons/", "src/", "popup/"],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "package:chrome": "python3 scripts/package.py"
+  }
+}

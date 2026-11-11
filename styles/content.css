@@ -1,0 +1,1242 @@
+/*
+ * Токены оформления в палитре самого ChatGPT: интерфейс расширения должен выглядеть
+ * его родной частью. Объявлены на контейнере расширения, а не на :root, чтобы ничего
+ * не протекало на страницу. Тёмную тему ChatGPT отмечает на html: раньше классом dark,
+ * теперь атрибутом data-theme="dark", а класса нет. Ловим оба признака.
+ */
+
+#dac-app {
+    /* Поверхности */
+    --dac-surface: #ffffff;
+    --dac-surface-hover: #f4f4f4;
+    --dac-surface-selected: #ececec;
+    --dac-overlay: rgba(0, 0, 0, 0.35);
+
+    /* Плавающие слои: карточка с уведомлениями и окна. В светлой теме сплошные,
+       в тёмной — матовое стекло, сквозь которое размыто виден чат */
+    --dac-surface-layer: #ffffff;
+    --dac-surface-dialog: #ffffff;
+    --dac-backdrop-layer: none;
+    --dac-backdrop-dialog: none;
+    --dac-backdrop-overlay: none;
+
+    /* Текст */
+    --dac-text: #0d0d0d;
+    --dac-text-subtle: #5d5d5d;
+    --dac-text-muted: #8f8f8f;
+
+    /* Границы */
+    --dac-border: rgba(13, 13, 13, 0.1);
+    --dac-border-strong: rgba(13, 13, 13, 0.15);
+
+    /* Основная кнопка у ChatGPT — чёрная, а не цветная */
+    --dac-primary: #0d0d0d;
+    --dac-primary-hover: #2f2f2f;
+    --dac-on-primary: #ffffff;
+
+    /* Состояния. Заливки действий приглушённые: белый текст на красном и тёмный на жёлтом читаются */
+    --dac-danger: #d64b43;
+    --dac-danger-hover: #c8423a;
+    --dac-danger-text: #d4312b;
+    --dac-danger-soft: rgba(224, 46, 42, 0.08);
+    --dac-on-danger: #ffffff;
+    --dac-archive: #f4c04e;
+    --dac-archive-hover: #edb43e;
+    --dac-on-archive: #3b2a00;
+    --dac-archive-soft: rgba(244, 192, 78, 0.18);
+    --dac-archive-text: #9a6a00;
+    --dac-success: #1e8e46;
+    --dac-success-soft: rgba(30, 142, 70, 0.1);
+    --dac-warning: #b25e00;
+
+    /* Шкала отступов */
+    --dac-space-1: 2px;
+    --dac-space-2: 4px;
+    --dac-space-3: 8px;
+    --dac-space-4: 12px;
+    --dac-space-5: 16px;
+    --dac-space-6: 24px;
+
+    /* Скругления */
+    --dac-radius-sm: 8px;
+    --dac-radius-md: 12px;
+    --dac-radius-lg: 20px;
+    --dac-radius-full: 999px;
+
+    /* Тени */
+    --dac-shadow-bar: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+    --dac-shadow-card: 0 18px 50px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06);
+    --dac-shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.2);
+
+    /* Типографика — тот же стек, что у ChatGPT */
+    --dac-font: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+    --dac-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --dac-text-xs: 12px;
+    --dac-text-sm: 13px;
+    --dac-text-md: 14px;
+    --dac-text-lg: 17px;
+
+    --dac-transition: 0.15s ease;
+}
+
+html:is(.dark, [data-theme="dark"]) #dac-app {
+    /* Слои полупрозрачные, поэтому кнопки и поля на них — светлая дымка, а не свой серый */
+    --dac-surface: rgba(255, 255, 255, 0.06);
+    --dac-surface-hover: rgba(255, 255, 255, 0.1);
+    --dac-surface-selected: rgba(255, 255, 255, 0.12);
+    --dac-overlay: rgba(0, 0, 0, 0.3);
+
+    --dac-surface-layer: rgba(46, 46, 46, 0.4);
+    --dac-surface-dialog: rgba(48, 48, 48, 0.62);
+    --dac-backdrop-layer: blur(16px) saturate(1.8);
+    --dac-backdrop-dialog: blur(28px) saturate(1.6);
+    --dac-backdrop-overlay: blur(5px);
+
+    --dac-text: #ececec;
+    --dac-text-subtle: #b4b4b4;
+    --dac-text-muted: #8f8f8f;
+
+    --dac-border: rgba(255, 255, 255, 0.14);
+    --dac-border-strong: rgba(255, 255, 255, 0.2);
+
+    --dac-primary: #ececec;
+    --dac-primary-hover: #ffffff;
+    --dac-on-primary: #0d0d0d;
+
+    --dac-danger: #d64b43;
+    --dac-danger-hover: #df5850;
+    --dac-danger-text: #ff7b7b;
+    --dac-danger-soft: rgba(255, 123, 123, 0.1);
+    --dac-archive: #e9b949;
+    --dac-archive-hover: #f2c55a;
+    --dac-on-archive: #2b1f00;
+    --dac-archive-soft: rgba(233, 185, 73, 0.14);
+    --dac-archive-text: #e9b949;
+    --dac-success: #4cc38a;
+    --dac-success-soft: rgba(76, 195, 138, 0.14);
+    --dac-warning: #f2ae3c;
+
+    /* Светлая кромка сверху — грань стекла; у окна вместо рамки кольцо тенью, чтобы не менять размеры */
+    --dac-shadow-bar: 0 12px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    --dac-shadow-card: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    --dac-shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+/*
+ * Базовый слой: сброс, типографика и элементы, общие для нескольких компонентов.
+ * Scoped-стили Vue не пересекают границу компонента, поэтому всё переиспользуемое живёт здесь.
+ * Внешний вид повторяет ChatGPT: кнопки-таблетки, мягкие тени, чёрный как основной цвет.
+ */
+
+#dac-app,
+#dac-app *,
+#dac-app *::before,
+#dac-app *::after {
+    box-sizing: border-box;
+}
+
+#dac-app {
+    font-family: var(--dac-font);
+    font-size: var(--dac-text-md);
+    line-height: 1.4;
+    color: var(--dac-text);
+}
+
+#dac-app *::-webkit-scrollbar {
+    width: 0;
+}
+
+/* КНОПКИ */
+.dac-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    margin: 0;
+    padding: 0 14px;
+    border: 1px solid var(--dac-border-strong);
+    border-radius: var(--dac-radius-full);
+    background-color: var(--dac-surface);
+    color: var(--dac-text);
+    font-family: inherit;
+    font-size: var(--dac-text-md);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--dac-transition), border-color var(--dac-transition), color var(--dac-transition);
+}
+
+.dac-button:hover:not(:disabled) {
+    background-color: var(--dac-surface-hover);
+}
+
+.dac-button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.dac-button svg {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.dac-button--block {
+    width: 100%;
+}
+
+.dac-button--primary {
+    border-color: var(--dac-primary);
+    background-color: var(--dac-primary);
+    color: var(--dac-on-primary);
+}
+
+.dac-button--primary:hover:not(:disabled) {
+    border-color: var(--dac-primary-hover);
+    background-color: var(--dac-primary-hover);
+}
+
+.dac-button--danger-solid {
+    border-color: var(--dac-danger);
+    background-color: var(--dac-danger);
+    color: var(--dac-on-danger);
+}
+
+.dac-button--danger-solid:hover:not(:disabled) {
+    border-color: var(--dac-danger-hover);
+    background-color: var(--dac-danger-hover);
+}
+
+.dac-button--archive {
+    border-color: var(--dac-archive);
+    background-color: var(--dac-archive);
+    color: var(--dac-on-archive);
+}
+
+.dac-button--archive:hover:not(:disabled) {
+    border-color: var(--dac-archive-hover);
+    background-color: var(--dac-archive-hover);
+}
+
+/* Круглая кнопка-иконка: закрыть, настройки */
+.dac-icon-button {
+    display: inline-flex;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--dac-text-subtle);
+    cursor: pointer;
+    transition: background-color var(--dac-transition), color var(--dac-transition);
+}
+
+.dac-icon-button:hover:not(:disabled) {
+    background-color: var(--dac-surface-hover);
+    color: var(--dac-text);
+}
+
+.dac-icon-button svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Ссылка-кнопка внутри строки: «Выбрать все», «Восстановить покупку» */
+.dac-link {
+    margin: 0;
+    padding: 0 var(--dac-space-2);
+    border: none;
+    background: none;
+    color: var(--dac-text-subtle);
+    font-family: inherit;
+    font-size: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--dac-border-strong);
+    text-underline-offset: 3px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.dac-link:hover {
+    color: var(--dac-text);
+    text-decoration-color: currentColor;
+}
+
+/* ПОЛЯ ВВОДА */
+.dac-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 var(--dac-space-4);
+    border: 1px solid var(--dac-border-strong);
+    border-radius: var(--dac-radius-md);
+    background-color: var(--dac-surface);
+    color: var(--dac-text);
+    font-family: inherit;
+    font-size: var(--dac-text-md);
+    outline: none;
+    transition: border-color var(--dac-transition);
+}
+
+.dac-input::placeholder {
+    color: var(--dac-text-muted);
+}
+
+.dac-input:focus {
+    border-color: var(--dac-text-subtle);
+}
+
+/* СЕКЦИИ МОДАЛОК */
+.dac-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: var(--dac-space-4) var(--dac-space-5);
+    border-top: 1px solid var(--dac-border);
+}
+
+.dac-row__label {
+    color: var(--dac-text-muted);
+    font-size: var(--dac-text-xs);
+    font-weight: 500;
+}
+
+.dac-muted {
+    color: var(--dac-text-muted);
+    font-size: var(--dac-text-sm);
+}
+
+.dac-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--dac-radius-full);
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 16px;
+}
+
+.dac-badge--success {
+    background-color: var(--dac-success-soft);
+    color: var(--dac-success);
+}
+
+.dac-badge--danger {
+    background-color: var(--dac-danger-soft);
+    color: var(--dac-danger-text);
+}
+
+/*
+ * Чекбоксы вставляются в сайдбар ChatGPT, то есть вне #dac-app,
+ * поэтому здесь без токенов — цвета заданы явно под обе темы ChatGPT.
+ */
+.dac-dialog-checkbox,
+.dac-timestamp-checkbox,
+.dac-project-checkbox {
+    appearance: none;
+    flex-shrink: 0;
+    /* Ссылка на чат в новой вёрстке не центрирует содержимое по вертикали */
+    align-self: center;
+    width: 16px;
+    height: 16px;
+    margin: 0 8px 0 0;
+    border: 1.5px solid #b4b4b4;
+    border-radius: 5px;
+    background: #ffffff no-repeat center / 12px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.dac-dialog-checkbox:checked,
+.dac-timestamp-checkbox:checked,
+.dac-project-checkbox:checked {
+    border-color: #0d0d0d;
+    background-color: #0d0d0d;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Строка закреплённого чата раскладывает содержимое по краям (space-between): рядом с чекбоксом
+   название уехало бы вправо — свободное место отдаём после него */
+.dac-dialog-checkbox + * {
+    margin-inline-end: auto;
+}
+
+/* Строка проекта в сайдбаре — без собственного отступа: у края она прижалась бы к нему и обрезалась.
+   Ставим галочку в колонку с галочками чатов, отступ до иконки уже есть у слота иконки */
+[data-app-action-sidebar-project-row] .dac-project-checkbox {
+    margin: 0 0 0 10px;
+}
+
+/* Проект, у которого отмечена часть чатов */
+.dac-project-checkbox:indeterminate {
+    border-color: #0d0d0d;
+    background-color: #0d0d0d;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10h8' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+html:is(.dark, [data-theme="dark"]) .dac-dialog-checkbox,
+html:is(.dark, [data-theme="dark"]) .dac-timestamp-checkbox,
+html:is(.dark, [data-theme="dark"]) .dac-project-checkbox {
+    border-color: #6b6b6b;
+    background-color: transparent;
+}
+
+html:is(.dark, [data-theme="dark"]) .dac-dialog-checkbox:checked,
+html:is(.dark, [data-theme="dark"]) .dac-timestamp-checkbox:checked,
+html:is(.dark, [data-theme="dark"]) .dac-project-checkbox:checked {
+    border-color: #ececec;
+    background-color: #ececec;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%230d0d0d' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+html:is(.dark, [data-theme="dark"]) .dac-project-checkbox:indeterminate {
+    border-color: #ececec;
+    background-color: #ececec;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 10h8' fill='none' stroke='%230d0d0d' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* Спиннер вместо галочки: чат, который сейчас удаляется или архивируется, и проект, чьи чаты догружаются */
+.dac-checkbox--busy,
+.dac-checkbox--busy:checked,
+.dac-checkbox--busy:indeterminate {
+    border: 2px solid rgba(13, 13, 13, 0.15);
+    border-top-color: #0d0d0d;
+    border-radius: 50%;
+    background: none;
+    cursor: progress;
+    animation: dac-checkbox-spin 0.8s linear infinite;
+}
+
+html:is(.dark, [data-theme="dark"]) .dac-checkbox--busy,
+html:is(.dark, [data-theme="dark"]) .dac-checkbox--busy:checked,
+html:is(.dark, [data-theme="dark"]) .dac-checkbox--busy:indeterminate {
+    border-color: rgba(255, 255, 255, 0.2);
+    border-top-color: #ececec;
+    background: none;
+}
+
+@keyframes dac-checkbox-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Выбранный чат подсвечиваем, как ChatGPT подсвечивает открытый. В новой вёрстке ссылка —
+   только полоска текста, фон строки у её группы; на странице проекта — у строки списка */
+#history a:has(> .dac-dialog-checkbox:checked),
+[class~="group/sidebar-expando-section"] a:has(> .dac-dialog-checkbox:checked),
+[data-app-action-sidebar-section] [role="group"]:has(.dac-dialog-checkbox:checked),
+main li:has(.dac-dialog-checkbox:checked) {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+html:is(.dark, [data-theme="dark"]) #history a:has(> .dac-dialog-checkbox:checked),
+html:is(.dark, [data-theme="dark"]) [class~="group/sidebar-expando-section"] a:has(> .dac-dialog-checkbox:checked),
+html:is(.dark, [data-theme="dark"]) [data-app-action-sidebar-section] [role="group"]:has(.dac-dialog-checkbox:checked),
+html:is(.dark, [data-theme="dark"]) main li:has(.dac-dialog-checkbox:checked) {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* В строке страницы проекта свой отступ между элементами */
+main .dac-dialog-checkbox {
+    margin: 0;
+}
+
+/* УТИЛИТЫ */
+.dac-u-truncate {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Строка начинается со слова из перевода, записанного со строчной: «продлевается …» */
+.dac-u-capitalize-first::first-letter {
+    text-transform: uppercase;
+}
+
+.dac-u-shine {
+    background: linear-gradient(
+        -45deg,
+        var(--dac-text) 0%,
+        var(--dac-text-muted) 25%,
+        var(--dac-text) 50%,
+        var(--dac-text-muted) 75%,
+        var(--dac-text) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: dac-shine 1.2s linear infinite;
+}
+
+@keyframes dac-shine {
+    100% {
+        background-position: -200% center;
+    }
+}
+
+/* Кнопка живёт в сайдбаре ChatGPT, вне #dac-app, поэтому цвета заданы явно под обе темы */
+.dac-entry[data-v-bb3b90ab] {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    margin: 0 0 0 4px;
+    padding: 0 10px 0 7px;
+    border: 1px solid rgba(13, 13, 13, 0.12);
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #0d0d0d;
+    font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.dac-entry[data-v-bb3b90ab]:hover {
+    background-color: #f4f4f4;
+}
+
+/* Иконка расширения (корзина), чтобы было видно, чья это кнопка */
+.dac-entry svg[data-v-bb3b90ab] {
+    flex-shrink: 0;
+    width: 11px;
+    height: 12px;
+    fill: currentColor;
+    /* Корзина ставится на базовую линию текста, а не в центр строки: у букв под ней пусто */
+    transform: translateY(-1px);
+}
+
+/* Кольцо фонового прогона: дорожка бледная, заполнение от верхней точки по часовой стрелке */
+.dac-entry svg.dac-entry__ring[data-v-bb3b90ab],
+.dac-rail-entry svg.dac-entry__ring[data-v-bb3b90ab] {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    transform: rotate(-90deg);
+}
+.dac-entry__ring-track[data-v-bb3b90ab] {
+    stroke: currentColor;
+    stroke-opacity: 0.2;
+    stroke-width: 2;
+}
+.dac-entry__ring-value[data-v-bb3b90ab] {
+    /* Кнопка вне #dac-app, токенов там нет: цвет удаления из tokens.css */
+    stroke: #d64b43;
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+}
+.dac-entry__ring--archive .dac-entry__ring-value[data-v-bb3b90ab] {
+    stroke: #f4c04e;
+}
+.dac-entry--progress[data-v-bb3b90ab] {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Проценты меняются раз в несколько секунд — по надписи слева направо бежит блик, как у «Thinking» в самом ChatGPT.
+   Блик — маской, а не цветом: годится для обеих тем без своих палитр */
+.dac-entry__busy[data-v-bb3b90ab] {
+    -webkit-mask-image: linear-gradient(90deg, #000 0 40%, rgba(0, 0, 0, 0.35) 50%, #000 60% 100%);
+    mask-image: linear-gradient(90deg, #000 0 40%, rgba(0, 0, 0, 0.35) 50%, #000 60% 100%);
+    -webkit-mask-size: 250% 100%;
+    mask-size: 250% 100%;
+    animation: dac-entry-shimmer-bb3b90ab 1.8s ease-in-out infinite;
+}
+
+/* Маска в 2,5 раза шире надписи: на 100% блик левее неё, на 0% — правее */
+@keyframes dac-entry-shimmer-bb3b90ab {
+from {
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+}
+to {
+        -webkit-mask-position: 0 0;
+        mask-position: 0 0;
+}
+}
+@media (prefers-reduced-motion: reduce) {
+.dac-entry__busy[data-v-bb3b90ab] {
+        animation: none;
+        -webkit-mask-image: none;
+        mask-image: none;
+}
+}
+.dac-entry--on[data-v-bb3b90ab],
+.dac-entry--on[data-v-bb3b90ab]:hover {
+    border-color: #0d0d0d;
+    background-color: #0d0d0d;
+    color: #ffffff;
+}
+
+/* Иконка в узкой полосе — по размерам и цветам как соседние иконки ChatGPT, на его же переменных */
+.dac-rail-entry[data-v-bb3b90ab] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 36px;
+    /* Полоса шире иконок: соседи стоят по центру, а не у края */
+    margin: 0 auto;
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    background-color: transparent;
+    color: var(--text-primary, currentColor);
+    cursor: pointer;
+    /* Под иконками полосы новой вёрстки — кнопка «Показать сайдбар» во всю высоту, сама полоса клики не ловит.
+       Держим кнопку над подложкой, даже если ChatGPT перестанет поднимать группу иконок */
+    position: relative;
+    pointer-events: auto;
+    transition: background-color 0.15s ease;
+}
+.dac-rail-entry[data-v-bb3b90ab]:hover {
+    background-color: var(--interactive-bg-secondary-hover, rgba(0, 0, 0, 0.05));
+}
+.dac-rail-entry--on[data-v-bb3b90ab] {
+    background-color: var(--interactive-bg-secondary-selected, rgba(0, 0, 0, 0.05));
+}
+.dac-rail-entry svg[data-v-bb3b90ab] {
+    width: 15px;
+    height: 16px;
+    fill: currentColor;
+}
+html:is(.dark, [data-theme="dark"]) .dac-entry[data-v-bb3b90ab] {
+    border-color: rgba(255, 255, 255, 0.14);
+    background-color: transparent;
+    color: #ececec;
+}
+html:is(.dark, [data-theme="dark"]) .dac-entry[data-v-bb3b90ab]:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Включённый режим — дымкой в тон стеклянной карточке: белая таблетка слепила среди серых пунктов сайдбара */
+html:is(.dark, [data-theme="dark"]) .dac-entry--on[data-v-bb3b90ab],
+html:is(.dark, [data-theme="dark"]) .dac-entry--on[data-v-bb3b90ab]:hover {
+    border-color: rgba(255, 255, 255, 0.24);
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+
+.dac-announcement[data-v-6cdc0419] {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 10px 30px 10px 10px;
+    border-radius: 14px;
+    background: var(--dac-archive-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--dac-archive) 55%, transparent);
+}
+
+/* В тёмной теме кнопки карточки уже жёлтое стекло — анонс светлой дымкой, чтобы не спорил с ними */
+html:is(.dark, [data-theme="dark"]) .dac-announcement[data-v-6cdc0419] {
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Иконки наших расширений тёмные — на белой подложке, чтобы читались и в тёмной теме */
+.dac-announcement__icon[data-v-6cdc0419] {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    padding: 2px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.dac-announcement__text[data-v-6cdc0419] {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.dac-announcement__title[data-v-6cdc0419] {
+    font-size: var(--dac-text-sm);
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+.dac-announcement__desc[data-v-6cdc0419] {
+    color: var(--dac-text-subtle);
+    font-size: var(--dac-text-xs);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+/* Длинный перевод надписи переносится внутри кнопки, а не вылезает за узкую карточку */
+.dac-announcement__cta[data-v-6cdc0419] {
+    align-self: flex-start;
+    max-width: 100%;
+    height: auto;
+    min-height: 28px;
+    margin-top: 6px;
+    padding: 5px 12px;
+    font-size: var(--dac-text-xs);
+    line-height: 1.25;
+    white-space: normal;
+    text-align: center;
+}
+.dac-announcement__close[data-v-6cdc0419] {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 26px;
+    height: 26px;
+}
+.dac-announcement__close svg[data-v-6cdc0419] {
+    width: 15px;
+    height: 15px;
+}
+
+.dac-card[data-v-a869dcbc] {
+    position: fixed;
+    width: 244px;
+    max-width: calc(100vw - 32px);
+    padding: var(--dac-space-5);
+    border: 1px solid var(--dac-border);
+    border-radius: 22px;
+    background-color: var(--dac-surface-layer);
+    backdrop-filter: var(--dac-backdrop-layer);
+    box-shadow: var(--dac-shadow-card);
+    transform-origin: top left;
+    animation: dac-card-in-a869dcbc 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+.dac-card__close[data-v-a869dcbc] {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.dac-card__number[data-v-a869dcbc] {
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+.dac-card__caption[data-v-a869dcbc] {
+    margin-top: var(--dac-space-2);
+    color: var(--dac-text-subtle);
+    font-size: var(--dac-text-sm);
+}
+.dac-card__links[data-v-a869dcbc] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    color: var(--dac-text-muted);
+    font-size: var(--dac-text-sm);
+}
+.dac-card__links .dac-link[data-v-a869dcbc] {
+    padding: 0;
+    font-size: var(--dac-text-sm);
+}
+
+/* Две кнопки поровну в ряд, одиночная — на всю ширину. Длинный перевод («Архивировать»)
+   в половину карточки не влезает — тогда каждая кнопка встаёт на свою строку во всю ширину */
+.dac-card__actions[data-v-a869dcbc] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dac-space-3);
+    margin-top: 14px;
+}
+.dac-card__actions .dac-button[data-v-a869dcbc] {
+    flex: 1 1 0;
+    min-width: max-content;
+    height: 40px;
+    padding: 0 var(--dac-space-3);
+}
+
+/* В тёмной теме карточка — стекло, и кнопки выбора тоже цветное стекло: две сплошные заливки рядом
+   были самым ярким пятном экрана. Плотная заливка остаётся у кнопки, которая подтверждает действие */
+html:is(.dark, [data-theme="dark"]) .dac-card--select .dac-button--archive[data-v-a869dcbc] {
+    border-color: rgba(233, 185, 73, 0.38);
+    background-color: rgba(233, 185, 73, 0.2);
+    color: #ffd77a;
+}
+html:is(.dark, [data-theme="dark"]) .dac-card--select .dac-button--archive[data-v-a869dcbc]:hover:not(:disabled) {
+    border-color: rgba(233, 185, 73, 0.5);
+    background-color: rgba(233, 185, 73, 0.3);
+}
+html:is(.dark, [data-theme="dark"]) .dac-card--select .dac-button--danger-solid[data-v-a869dcbc] {
+    border-color: rgba(240, 90, 80, 0.42);
+    background-color: rgba(240, 90, 80, 0.22);
+    color: #ffaaa3;
+}
+html:is(.dark, [data-theme="dark"]) .dac-card--select .dac-button--danger-solid[data-v-a869dcbc]:hover:not(:disabled) {
+    border-color: rgba(240, 90, 80, 0.55);
+    background-color: rgba(240, 90, 80, 0.32);
+}
+html:is(.dark, [data-theme="dark"]) .dac-card--confirm .dac-button--archive[data-v-a869dcbc] {
+    border-color: rgba(255, 220, 140, 0.5);
+    background-color: rgba(233, 185, 73, 0.85);
+}
+html:is(.dark, [data-theme="dark"]) .dac-card--confirm .dac-button--archive[data-v-a869dcbc]:hover:not(:disabled) {
+    border-color: rgba(255, 220, 140, 0.6);
+    background-color: rgba(242, 197, 90, 0.92);
+}
+html:is(.dark, [data-theme="dark"]) .dac-card--confirm .dac-button--danger-solid[data-v-a869dcbc] {
+    border-color: rgba(255, 150, 140, 0.5);
+    background-color: rgba(222, 70, 62, 0.85);
+}
+html:is(.dark, [data-theme="dark"]) .dac-card--confirm .dac-button--danger-solid[data-v-a869dcbc]:hover:not(:disabled) {
+    border-color: rgba(255, 150, 140, 0.6);
+    background-color: rgba(229, 84, 76, 0.92);
+}
+.dac-card__badge[data-v-a869dcbc] {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--dac-radius-md);
+}
+.dac-card__badge svg[data-v-a869dcbc] {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.dac-card__badge--delete[data-v-a869dcbc] {
+    background-color: var(--dac-danger-soft);
+    color: var(--dac-danger-text);
+}
+.dac-card__badge--archive[data-v-a869dcbc] {
+    background-color: var(--dac-archive-soft);
+    color: var(--dac-archive-text);
+}
+.dac-card__question[data-v-a869dcbc] {
+    margin-top: var(--dac-space-4);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+.dac-card__count[data-v-a869dcbc] {
+    display: inline-block;
+    min-width: 22px;
+    margin-left: var(--dac-space-1);
+    padding: 1px 7px;
+    border-radius: var(--dac-radius-full);
+    background-color: var(--dac-surface-selected);
+    font-size: var(--dac-text-sm);
+    text-align: center;
+}
+.dac-card__title[data-v-a869dcbc] {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+/* Прогон идёт: процент меняется только после ответа ChatGPT, спиннер показывает, что работа не встала */
+.dac-card__title--busy[data-v-a869dcbc] {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.dac-spinner[data-v-a869dcbc] {
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    border: 2px solid var(--dac-surface-selected);
+    border-top-color: var(--dac-text);
+    border-radius: 50%;
+    animation: dac-spin-a869dcbc 0.8s linear infinite;
+}
+.dac-card__note[data-v-a869dcbc] {
+    margin-top: 3px;
+    color: var(--dac-text-muted);
+    font-size: var(--dac-text-sm);
+}
+.dac-card__note--warning[data-v-a869dcbc] {
+    color: var(--dac-warning);
+}
+.dac-card__hint[data-v-a869dcbc] {
+    margin-top: 10px;
+}
+
+/* Плашка «почему медленно» над прогрессом: нейтральная, не тревожная — это не ошибка */
+.dac-card__reason[data-v-a869dcbc] {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: var(--dac-surface-hover);
+    color: var(--dac-text-subtle);
+    font-size: var(--dac-text-sm);
+    line-height: 1.35;
+}
+.dac-card__reason svg[data-v-a869dcbc] {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+}
+.dac-card__progress[data-v-a869dcbc] {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Кольцо прогресса: цвет — действие прогона, у незавершённой очереди действие неизвестно — основной цвет */
+.dac-ring[data-v-a869dcbc] {
+    position: relative;
+    flex-shrink: 0;
+    width: 76px;
+    height: 76px;
+}
+.dac-ring svg[data-v-a869dcbc] {
+    width: 76px;
+    height: 76px;
+    transform: rotate(-90deg);
+}
+.dac-ring circle[data-v-a869dcbc] {
+    fill: none;
+    stroke-width: 7;
+}
+.dac-ring__track[data-v-a869dcbc] {
+    stroke: var(--dac-surface-selected);
+}
+.dac-ring__value[data-v-a869dcbc] {
+    stroke: var(--dac-primary);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.3s ease;
+}
+.dac-ring--delete .dac-ring__value[data-v-a869dcbc] {
+    stroke: var(--dac-danger);
+}
+.dac-ring--archive .dac-ring__value[data-v-a869dcbc] {
+    stroke: var(--dac-archive);
+}
+.dac-ring__label[data-v-a869dcbc] {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.15;
+}
+.dac-ring__label small[data-v-a869dcbc] {
+    color: var(--dac-text-muted);
+    font-size: 11px;
+    font-weight: 500;
+}
+@keyframes dac-spin-a869dcbc {
+to {
+        transform: rotate(360deg);
+}
+}
+@keyframes dac-card-in-a869dcbc {
+from {
+        opacity: 0;
+        transform: scale(0.94) translateY(-6px);
+}
+}
+
+.dac-overlay[data-v-6131379d] {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--dac-space-5);
+    background-color: var(--dac-overlay);
+    backdrop-filter: var(--dac-backdrop-overlay);
+    animation: dac-overlay-in-6131379d 0.15s ease-out;
+}
+.dac-dialog[data-v-6131379d] {
+    display: flex;
+    flex-direction: column;
+    width: 380px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    padding: var(--dac-space-3) var(--dac-space-3) var(--dac-space-4);
+    border-radius: var(--dac-radius-lg);
+    background-color: var(--dac-surface-dialog);
+    backdrop-filter: var(--dac-backdrop-dialog);
+    box-shadow: var(--dac-shadow-modal);
+    animation: dac-dialog-in-6131379d 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+.dac-dialog__header[data-v-6131379d] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--dac-space-4);
+    padding: var(--dac-space-2) var(--dac-space-2) var(--dac-space-3) var(--dac-space-5);
+}
+.dac-dialog__title[data-v-6131379d] {
+    font-size: var(--dac-text-lg);
+    font-weight: 600;
+}
+@keyframes dac-overlay-in-6131379d {
+from {
+        opacity: 0;
+}
+}
+@keyframes dac-dialog-in-6131379d {
+from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.97);
+}
+}
+
+/* ТАРИФЫ */
+
+/* Нативная радиокнопка остаётся для клавиатуры, рисуем свою */
+
+.dac-user-id[data-v-704963fb] {
+    font-family: var(--dac-font-mono);
+    font-size: var(--dac-text-xs);
+    white-space: nowrap;
+    user-select: all;
+}
+.dac-contact[data-v-704963fb] {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--dac-text);
+    font-family: inherit;
+    font-size: var(--dac-text-md);
+    text-decoration: none;
+    cursor: pointer;
+}
+.dac-contact[data-v-704963fb]:hover {
+    text-decoration: underline;
+}
+.dac-contact svg[data-v-704963fb] {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: var(--dac-text-subtle);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.dac-contact--muted[data-v-704963fb] {
+    color: var(--dac-text-muted);
+    font-size: var(--dac-text-sm);
+}
+
+.dac-rating[data-v-4af8070f] {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dac-space-5);
+    padding: 0 var(--dac-space-4);
+}
+.dac-rating__intro[data-v-4af8070f] {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--dac-space-4);
+}
+
+/* Иконки наших расширений тёмные — на белой подложке, чтобы читались и в тёмной теме */
+.dac-rating__icon[data-v-4af8070f] {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    padding: 3px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.dac-rating__text[data-v-4af8070f] {
+    margin: 0;
+    color: var(--dac-text-subtle);
+    font-size: var(--dac-text-md);
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+/* Длинный перевод надписи переносится внутри кнопки */
+.dac-rating__cta[data-v-4af8070f] {
+    align-self: center;
+    max-width: 100%;
+    height: auto;
+    min-height: 36px;
+    padding: 8px 20px;
+    line-height: 1.25;
+    white-space: normal;
+    text-align: center;
+}
+.dac-rating__decline[data-v-4af8070f] {
+    align-self: center;
+    margin-top: calc(-1 * var(--dac-space-2));
+}
+.dac-rating__stars[data-v-4af8070f] {
+    display: flex;
+    justify-content: center;
+    gap: var(--dac-space-2);
+}
+.dac-rating__stars button[data-v-4af8070f] {
+    padding: 4px;
+    border: none;
+    background: none;
+    line-height: 0;
+    cursor: pointer;
+}
+
+/* Пустая звезда — дымка цвета текста: видна и в светлой, и в тёмной теме */
+.dac-rating__stars svg[data-v-4af8070f] {
+    width: 36px;
+    height: 36px;
+    fill: color-mix(in srgb, var(--dac-text) 14%, transparent);
+    transition: fill var(--dac-transition), transform var(--dac-transition);
+}
+.dac-rating__stars button:hover svg[data-v-4af8070f],
+.dac-rating__stars button:focus-visible svg[data-v-4af8070f] {
+    transform: scale(1.12);
+}
+.dac-rating__stars .dac-rating__star--on svg[data-v-4af8070f] {
+    fill: #f5a524;
+}
+
+.dac-toast-timer[data-v-65dffb14] {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background-color: currentColor;
+    opacity: 0.55;
+    transform-origin: left;
+}
+.dac-toast-timer[data-v-65dffb14]:dir(rtl) {
+    transform-origin: right;
+}
+
+.dac-toasts[data-v-fb369c09] {
+    position: fixed;
+    /* Шапка ChatGPT высотой 52px: переключатель режимов в ней не перекрываем */
+    top: 64px;
+    z-index: 20;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--dac-space-3);
+    width: max-content;
+    max-width: min(440px, calc(100vw - 24px));
+}
+.dac-toast[data-v-fb369c09] {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--dac-space-3);
+    padding: 10px 10px 10px 14px;
+    border: 1px solid var(--dac-border);
+    border-radius: var(--dac-radius-md);
+    background-color: var(--dac-surface-layer);
+    backdrop-filter: var(--dac-backdrop-layer);
+    box-shadow: var(--dac-shadow-bar);
+    color: var(--dac-text);
+    font-size: var(--dac-text-md);
+    animation: dac-toast-in-fb369c09 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+.dac-toast__icon[data-v-fb369c09] {
+    flex-shrink: 0;
+    width: 19px;
+    height: 19px;
+    margin-top: 0;
+    fill: none;
+    stroke: var(--dac-text-subtle);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.dac-toast--success .dac-toast__icon[data-v-fb369c09] {
+    stroke: var(--dac-success);
+}
+.dac-toast--error .dac-toast__icon[data-v-fb369c09] {
+    stroke: var(--dac-danger-text);
+}
+
+/* Полоса отсчёта — цветом значка */
+.dac-toast-timer[data-v-fb369c09] {
+    color: var(--dac-text-subtle);
+}
+.dac-toast--success .dac-toast-timer[data-v-fb369c09] {
+    color: var(--dac-success);
+}
+.dac-toast--error .dac-toast-timer[data-v-fb369c09] {
+    color: var(--dac-danger-text);
+}
+.dac-toast__body[data-v-fb369c09] {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+.dac-toast__text[data-v-fb369c09] {
+    padding-top: 1px;
+}
+.dac-toast__close[data-v-fb369c09] {
+    display: flex;
+    flex-shrink: 0;
+    margin: -2px 0 0;
+    padding: 2px;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: var(--dac-text-muted);
+    cursor: pointer;
+}
+.dac-toast__close[data-v-fb369c09]:hover {
+    color: var(--dac-text);
+}
+.dac-toast__close svg[data-v-fb369c09] {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+}
+@keyframes dac-toast-in-fb369c09 {
+from {
+        opacity: 0;
+        transform: translateY(-8px);
+}
+}
